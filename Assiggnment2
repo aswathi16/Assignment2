@@ -1,0 +1,74 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Dec 11 13:03:16 2022
+
+@author: Aswathi
+"""
+
+#importing requiredpackages
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def read_file(file_name):
+    """
+        This function takes name of the file and reads the file and loads it into a dataframe.
+        Then transposes the dataframe and returns both the first and transposed dataframes
+    """
+
+    df = pd.read_csv(file_name)
+    df_transpose = pd.DataFrame.transpose(df)
+    return(df, df_transpose)
+
+#Reads the files
+df_Forest_total,df_forest_countries = read_file("Forest_Area.csv")
+
+
+def ForestArea() :
+  """
+  Forest Area used bar graph
+  Creating bar graph of Forest area in sq.km in mutiple countries from 1990-2015
+  """
+
+  #Header setting
+  header = df_forest_countries.iloc[0].values.tolist()
+  df_forest_countries.columns = header
+
+  #Cleaning the dataframe
+  df_forest_countries = df_forest_countries.iloc[1:]
+  df_forest_countries = df_forest_countries.iloc[11:55]
+
+  #Converting index to int
+  df_forest_countries.index = df_forest_countries.index.astype(int)
+  df_forest_countries = df_forest_countries[df_forest_countries.index>1989]
+  df_forest_countries = df_forest_countries.dropna(axis = 'columns')
+
+  #Creates a list of countries to use in the plot
+  countries =[ 'United Kingdom','India','United States', 'China', 'Germany', 'Canada', 'France', 'Bangladesh']
+  df_forest_time = pd.DataFrame.transpose(df_forest_countries)
+  years = [1990, 1995, 2000, 2005, 2010, 2014]
+
+  #selecting only required data
+  df_forest_subset_time = df_forest_time[years].copy()
+  df_forest_subset_time = df_forest_subset_time.loc[df_forest_subset_time.index.isin(countries)]
+
+  #plotting the data
+  n=8
+  r=np.arange(n)
+  width= 0.1
+  plt.bar(r-0.3, df_forest_subset_time[1990], color = 'grey',width = width, edgecolor = 'black',label='1990')
+  plt.bar(r-0.2, df_forest_subset_time[1995], color = 'g',width = width, edgecolor = 'black',label='1995')
+  plt.bar(r-0.1, df_forest_subset_time[2000], color = 'orange',width = width, edgecolor = 'black',label='2000')
+  plt.bar(r, df_forest_subset_time[2005], color = 'red',width = width, edgecolor = 'black',label='2005')
+  plt.bar(r+0.1, df_forest_subset_time[2010], color = 'steelblue',width = width, edgecolor = 'black',label='2010')
+  plt.bar(r+0.2, df_forest_subset_time[2014], color = 'black',width = width, edgecolor = 'black',label='2014')
+  plt.xlabel("Countries")
+  plt.ylabel("Forest Area")
+  plt.xticks(width+r, countries, rotation = 45)
+  plt.legend()
+  plt.title("Forest area(Sq. Km)))")
+  plt.savefig("line1.png", dpi=300, bbox_inches='tight')
+  plt.savefig("Forest Area.png", dpi=300, bbox_inches='tight')
+  plt.show()
+
